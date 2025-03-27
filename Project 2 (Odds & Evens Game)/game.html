@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odds and Evens Game</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #0cf63e, #fad0c4);
+            color: #333;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+            animation: fadeIn 1s ease-in-out;
+        }
+        h1 {
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 12px 20px;
+            margin: 10px;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s ease;
+        }
+        .odds { background-color: #f34106; color: white; }
+        .evens { background-color: #4110e3; color: white; }
+        button:hover {
+            transform: scale(1.1);
+            opacity: 0.9;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Odds and Evens Game</h1>
+        <p>Choose one:</p>
+        <button class="odds" onclick="startGame('Odds')">Odds</button>
+        <button class="evens" onclick="startGame('Evens')">Evens</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        function startGame(choice) {
+            let userNumber = prompt("Enter a number between 1 and 5:");
+            userNumber = parseInt(userNumber);
+
+            if (isNaN(userNumber) || userNumber < 1 || userNumber > 5) {
+                alert("Invalid input! Choose a number between 1 and 5.");
+                return;
+            }
+            
+            let computerNumber = Math.floor(Math.random() * 5) + 1;
+            let total = userNumber + computerNumber;
+            let result = (total % 2 === 0) ? "Evens" : "Odds";
+            
+            document.getElementById("result").innerHTML = 
+                `<p>You chose: <b>${choice}</b></p>
+                 <p>You picked: <b>${userNumber}</b></p>
+                 <p>Computer picked: <b>${computerNumber}</b></p>
+                 <p>Total: <b>${total}</b></p>
+                 <p>It's <b>${result}</b>!</p>
+                 <h2>${choice === result ? "🎉 You Win!" : "😔 Computer Wins!"}</h2>`;
+        }
+    </script>
+</body>
+</html>
