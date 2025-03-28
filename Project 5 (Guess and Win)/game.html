@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess and Win</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            color: black;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #ff0000, #0015ff, #00f811, #f108ba);
+            background-size: 400% 400%;
+            animation: moveBackground 10s ease infinite;
+            z-index: -1;
+        }
+
+        @keyframes moveBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 50px;
+            background: rgba(0, 255, 213, 0.9);
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin-top: 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        button {
+            margin-top: 40px;
+            padding: 10px;
+            background: #ff0000;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            background: #ff3333;
+        }
+
+        .timer {
+            font-size: 30px;
+            margin-top: 10px;
+            color: #0a0a0a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🔥 Guess and Win 🔥</h2>
+        <p id="message">Player A, guess a number between 1 and 100</p>
+        <p class="timer">⏳ Time left: <span id="timer">20</span> sec</p>
+        <input type="number" id="guessInput" min="1" max="100">
+        <button onclick="makeGuess()">Submit Guess</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        let player = 'A';
+        let targetNumber = Math.floor(Math.random() * 100) + 1;
+        let attemptsA = 0, attemptsB = 0;
+        let guessedNumbersA = new Set();
+        let guessedNumbersB = new Set();
+        let timer;
+        let timeLeft = 20;
+        let timerRunning = false;
+
+        function startTimer() {
+            if (timerRunning) return;
+            timerRunning = true;
+            timeLeft = 20;
+            document.getElementById('timer').innerText = timeLeft;
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timerRunning = false;
+                    makeGuess(true);
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timer);
+            timerRunning = false;
+        }
+
+        document.getElementById("guessInput").addEventListener("keypress", function(event) {
+            if (!timerRunning) startTimer();
+            if (event.key === "Enter") {
+                makeGuess();
+            }
+        });
+
+        function makeGuess(auto = false) {
+            let guessInput = document.getElementById('guessInput');
+            let guess = auto ? -1 : parseInt(guessInput.value);
+            let result = document.getElementById('result');
+            let currentGuessedNumbers = player === 'A' ? guessedNumbersA : guessedNumbersB;
+            
+            if (!auto && (isNaN(guess) || guess < 1 || guess > 100)) {
+                result.innerText = "⚠️ Enter a valid number between 1 and 100!";
+                return;
+            }
+
+            if (currentGuessedNumbers.has(guess)) {
+                result.innerText = "❌ You already guessed that number! Try a different one.";
+                return;
+            }
+
+            stopTimer();
+            currentGuessedNumbers.add(guess);
+            
+            if (player === 'A') {
+                attemptsA++;
+                if (guess > targetNumber) {
+                    result.innerText = "⬇️ Lower number please!";
+                    startTimer();
+                } else if (guess < targetNumber) {
+                    result.innerText = "⬆️ Higher number please!";
+                    startTimer();
+                } else {
+                    result.innerText = `🎉 Player A guessed correctly in ${attemptsA} attempts!`;
+                    player = 'B';
+                    targetNumber = Math.floor(Math.random() * 100) + 1;
+                    document.getElementById('message').innerText = "Player B, your turn!";
+                }
+            } else {
+                attemptsB++;
+                if (guess > targetNumber) {
+                    result.innerText = "⬇️ Lower number please!";
+                    startTimer();
+                } else if (guess < targetNumber) {
+                    result.innerText = "⬆️ Higher number please!";
+                    startTimer();
+                } else {
+                    result.innerText = `🎉 Player B guessed correctly in ${attemptsB} attempts!`;
+                    announceWinner();
+                }
+            }
+        }
+        
+        function announceWinner() {
+            let message = document.getElementById('message');
+            let winner;
+            if (attemptsA < attemptsB) {
+                winner = "Player A wins the game! 🎉";
+            } else if (attemptsB < attemptsA) {
+                winner = "Player B wins the game! 🎉";
+            } else {
+                winner = "It's a Draw! Play again to determine the real winner 💯";
+            }
+            setTimeout(() => {
+                alert(`🎊 CONGRATULATIONS! 🎊\n${winner}`);
+            }, 500);
+        }
+    </script>
+</body>
+</html>
